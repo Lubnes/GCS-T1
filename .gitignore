@@ -11,3 +11,6 @@
 
 # Crash logs
 hs_err_pid*
+
+.idea/
+*.iml
