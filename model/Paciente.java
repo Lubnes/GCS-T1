@@ -24,4 +24,10 @@ public class Paciente extends Usuario {
     public String toString() {
         return "Paciente: " + super.toString();
     }
+
+    public void listarAutorizacoes() {
+        for (AutorizacaoExame autorizacao : autorizacoes) {
+            System.out.println(autorizacao);
+        }
+    }
 }
