@@ -11,4 +11,17 @@ public class Paciente extends Usuario {
         super(id, nome, iniciais);
         this.autorizacoes = new ArrayList<>();
     }
+
+    public List<AutorizacaoExame> getAutorizacoes() {
+        return autorizacoes;
+    }
+
+    public void adicionarAutorizacao(AutorizacaoExame autorizacao) {
+        autorizacoes.add(autorizacao);
+    }
+
+    @Override
+    public String toString() {
+        return "Paciente: " + super.toString();
+    }
 }
