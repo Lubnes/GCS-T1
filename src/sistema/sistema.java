@@ -97,13 +97,54 @@ public class Sistema {
 
         Paciente paciente = pacientes.get(indice);
 
-        System.out.print("Nome do exame: ");
-        String nomeExame = sc.nextLine();
+        TipoExame[] exames = TipoExame.values();
+        for (int i = 0; i < exames.length; i++) {
+            System.out.println(i + " - " + exames[i].getDescricao());
+        }
+        System.out.print("Escolha o exame: ");
+        int indiceExame = sc.nextInt();
+        sc.nextLine();
 
-        AutorizacaoExame aut = new AutorizacaoExame( (Medico) usuarioAtual, paciente, nomeExame);
+        if (indiceExame < 0 || indiceExame >= exames.length) {
+            System.out.println("Exame inválido.");
+            return;
+        }
+
+        TipoExame tipoExame = exames[indiceExame];
+
+        AutorizacaoExame aut = new AutorizacaoExame( (Medico) usuarioAtual, paciente, tipoExame);
 
         autorizacoes.add(aut);
 
         System.out.println("Autorização criada com sucesso!");
+    }
+
+    private void criarUsuario() {
+        if(!(usuarioAtual instanceof Administrador)) {
+            System.out.println("Apenas administradores podem criar usuários.");
+            return;
+        }
+
+        System.out.println("\n=== Criar Usuario ===");
+
+        System.out.println("\nNome: ");
+        String nome =  sc.nextLine();
+
+        System.out.println("\nIniciais: ");
+        String iniciais =  sc.nextLine();
+
+        System.out.println("\nSelecione o tipo de usuario:");
+        System.out.println("\n1 - Administrador");
+        System.out.println("\n2 - Médico");
+        System.out.println("\n3 - Paciente");
+        int tipo =  sc.nextInt();
+        sc.nextLine();
+
+        switch (tipo) {
+            case 1: usuarios.add(new Administrador(nome, iniciais)); break;
+            case 2: usuarios.add(new Medico(nome, iniciais)); break;
+            case 3: usuarios.add(new Paciente(nome, iniciais)); break;
+            default: System.out.println("Tipo inválido."); break;
+        } 
     }
 }

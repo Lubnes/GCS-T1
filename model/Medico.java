@@ -2,8 +2,8 @@ package model;
 
 public class Medico extends Usuario {
 
-    public Medico(int id, String nome, String iniciais) {
-        super(id, nome, iniciais);
+    public Medico(String nome, String iniciais) {
+        super(nome, iniciais);
     }
 
     @Override

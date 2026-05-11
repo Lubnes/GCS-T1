@@ -7,8 +7,8 @@ public class Paciente extends Usuario {
 
     private List<AutorizacaoExame> autorizacoes;
 
-    public Paciente(int id, String nome, String iniciais) {
-        super(id, nome, iniciais);
+    public Paciente(String nome, String iniciais) {
+        super(nome, iniciais);
         this.autorizacoes = new ArrayList<>();
     }
 
