@@ -2,12 +2,14 @@ package model;
 
 public abstract class Usuario {
 
-    protected int id;
+    private static int proximoId = 1000;
+
+    private final int id;
     protected String nome;
     protected String iniciais;
 
-    public Usuario(int id, String nome, String iniciais) {
-        this.id = id;
+    public Usuario(String nome, String iniciais) {
+        this.id = proximoId++;
         this.nome = nome;
         this.iniciais = iniciais;
     }
