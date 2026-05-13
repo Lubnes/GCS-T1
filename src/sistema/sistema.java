@@ -147,4 +147,128 @@ public class Sistema {
             default: System.out.println("Tipo inválido."); break;
         } 
     }
+
+    private void buscarUsuario() {
+        if ((usuarioAtual instanceof Administrador)== false) {
+            System.out.println("Apenas administradores podem buscar usuários.");
+            return;
+        }
+
+        sc.nextLine(); // limpa o ENTER que sobrou do nextInt()
+
+        System.out.print("Digite parte do nome do médico/paciente: ");
+        String trecho = sc.nextLine().trim().toLowerCase();
+
+        if (trecho.isEmpty()) {
+            System.out.println("Busca vazia.");
+            return;
+        }
+
+        List<Usuario> encontrados = new ArrayList<>();
+
+        for (Usuario u : usuarios) {
+            if ((u instanceof Medico || u instanceof Paciente)
+                    && u.getNome().toLowerCase().contains(trecho)) {
+                encontrados.add(u);
+            }
+        }
+
+        if (encontrados.isEmpty()) {
+            System.out.println("Nenhum médico ou paciente encontrado com esse nome.");
+            return;
+        }
+
+        System.out.println("\n=== Resultados da busca ===");
+        for (int i = 0; i < encontrados.size(); i++) {
+            Usuario u = encontrados.get(i);
+            String tipo = (u instanceof Medico) ? "Médico" : "Paciente";
+            System.out.println(i + " - " + u.getNome() + " (" + tipo + ")");
+        }
+
+        System.out.print("Escolha o índice do usuário: ");
+        int indice = sc.nextInt();
+        sc.nextLine();
+
+        if (indice < 0 || indice >= encontrados.size()) {
+            System.out.println("Índice inválido.");
+            return;
+        }
+
+        Usuario escolhido = encontrados.get(indice);
+
+        System.out.println("\n=== Usuário selecionado ===");
+        System.out.println("Nome: " + escolhido.getNome());
+        System.out.println("Iniciais: " + escolhido.getIniciais());
+        System.out.println("Tipo: " + (escolhido instanceof Medico ? "Médico" : "Paciente"));
+
+        listarAutorizacoesDoUsuario(escolhido);
+    }
+
+    private void listarAutorizacoesDoUsuario( Usuario usuario ) {
+        List<AutorizacaoExame> lista = new ArrayList<>();
+
+        for ( AutorizacaoExame a : autorizacoes ) {
+            if (a.getMedicoSolicitante() == usuario || a.getPaciente() == usuario) {
+                lista.add(a);
+            }
+        }
+
+        if (lista.isEmpty()) {
+            System.out.println("Esse usuário não possui autorizações.");
+            return;
+        }
+
+        lista.sort(Comparator.comparing(AutorizacaoExame::getDataCadastro));
+
+        System.out.println("\n=== Autorizações do usuário ===");
+        for (AutorizacaoExame a : lista) {
+            System.out.println("Código: " + a.getCodigo());
+            System.out.println("Data: " + a.getDataCadastro());
+            System.out.println("Médico: " + a.getMedicoSolicitante().getNome());
+            System.out.println("Paciente: " + a.getPaciente().getNome());
+            System.out.println("Exame: " + a.getExame().getDescricao());
+
+            if (a.getDataRealizacao() != null) {
+                System.out.println("Realizado em: " + a.getDataRealizacao());
+            } else {
+                System.out.println("Realizado em: não realizado");
+            }
+
+            System.out.println("------------------------");
+        }
+    }
+
+    private void estatisticas() {
+        if ((usuarioAtual instanceof Administrador ) == false ) {
+            System.out.println("Apenas administradores podem ver estatísticas.");
+            return;
+        }
+        int numMedicos = 0;
+        int numPacientes = 0;
+
+        for (Usuario u : usuarios) {
+            if (u instanceof Medico) {
+                numMedicos++;
+            } else if (u instanceof Paciente) {
+                numPacientes++;
+            }
+        }
+
+        int totalAutorizacoes = autorizacoes.size();
+        int realizadas = 0;
+
+        for ( AutorizacaoExame a : autorizacoes ) {
+            if (a.getDataRealizacao() != null) {
+                realizadas++;
+            }
+        }
+
+        double percentualRealizadas = (totalAutorizacoes == 0) ? 0.0 : (realizadas * 100.0/totalAutorizacoes);
+
+        System.out.println("\n=== Estatísticas Gerais ===");
+        System.out.println("Número de médicos: " + numMedicos);
+        System.out.println("Número de pacientes: " + numPacientes);
+        System.out.println("Número de autorizações emitidas: " + totalAutorizacoes);
+        System.out.printf("Percentual de autorizações realizadas: %.2f%%%n", percentualRealizadas);
+    }
 }
