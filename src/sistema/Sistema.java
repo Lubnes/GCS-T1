@@ -66,7 +66,7 @@ public class Sistema {
     }
 
     private void criarAutorizacao() {
-        if (( usuarioAtual instanceof Medico ) == false ) {
+        if (!(usuarioAtual instanceof Medico)) {
             System.out.println( "Apenas médicos podem criar autorizações.");
             return;
         }
@@ -239,7 +239,7 @@ public class Sistema {
     }
 
     private void estatisticas() {
-        if ((usuarioAtual instanceof Administrador ) == false ) {
+        if (!(usuarioAtual instanceof Administrador)) {
             System.out.println("Apenas administradores podem ver estatísticas.");
             return;
         }
