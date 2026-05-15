@@ -89,6 +89,11 @@ public class Sistema {
         }
 
         System.out.print("Escolha o paciente: ");
+        if (!sc.hasNextInt()) {
+            System.out.println("Entrada inválida. Digite um número.");
+            sc.nextLine(); // Limpa a entrada inválida
+            return;
+        }
         int indice = sc.nextInt();
         sc.nextLine(); 
 
