@@ -2,6 +2,7 @@ package sistema;
 
 import model.*;
 import java.util.*;
+import java.time.LocalDate;
 
 public class Sistema {
 
@@ -29,6 +30,7 @@ public class Sistema {
             System.out.println("0 - Sair");
 
             opcao = sc.nextInt();
+            sc.nextLine();
 
             switch (opcao) {
                 case 1: trocarUsuario(); break;
@@ -271,4 +273,152 @@ public class Sistema {
         System.out.println("Número de autorizações emitidas: " + totalAutorizacoes);
         System.out.printf("Percentual de autorizações realizadas: %.2f%%%n", percentualRealizadas);
     }
+
+    private void listarMinhas() {
+        if (!(usuarioAtual instanceof Paciente)) {
+            System.out.println("Apenas pacientes podem ver suas autorizações.");
+            return;
+        }
+
+        System.out.println("\n=== Minhas Autorizações ===");
+        Paciente paciente = (Paciente) usuarioAtual;
+
+        List<AutorizacaoExame> minhas = new ArrayList<>(paciente.getAutorizacoes());
+        minhas.sort(Comparator.comparing(AutorizacaoExame::getDataCadastro));
+
+        if (minhas.isEmpty()) System.out.println("Nenhuma autorização encontrada.");
+        else minhas.forEach(System.out::println);
+    }
+
+    private void marcarRealizado() {
+        if (!(usuarioAtual instanceof Paciente)) {
+            System.out.println("Apenas pacientes podem marcar exames como realizados.");
+            return;
+        }
+
+        Paciente paciente = (Paciente) usuarioAtual;
+        List<AutorizacaoExame> pendentes = new ArrayList<>();
+
+        for (AutorizacaoExame a : paciente.getAutorizacoes())
+            if (!a.isRealizado()) pendentes.add(a);
+
+        if (pendentes.isEmpty()) {
+            System.out.println("Nenhuma autorização pendente.");
+            return;
+        }
+
+        System.out.println("\n=== Marcar Exame como Realizado ===");
+        for (int i = 0; i < pendentes.size(); i++)
+            System.out.println(i + " - " + pendentes.get(i));
+
+        System.out.print("Escolha a autorização: ");
+        int idx = sc.nextInt(); sc.nextLine();
+        if (idx < 0 || idx >= pendentes.size()) { System.out.println("Inválido."); return; }
+
+        System.out.print("Data de realização (AAAA-MM-DD): ");
+        String dataStr = sc.nextLine();
+
+        try {
+            LocalDate data = LocalDate.parse(dataStr);
+            boolean ok = pendentes.get(idx).marcarComoRealizado(data);
+            if (ok) System.out.println("Exame marcado como realizado com sucesso!");
+        } catch (Exception e) {
+            System.out.println("Data inválida. Use o formato AAAA-MM-DD.");
+        }
+    }
+
+    private void listarAutorizacoes() {
+        if (!(usuarioAtual instanceof Medico)) {
+            System.out.println("Apenas médicos podem listar autorizações.");
+            return;
+        }
+
+        System.out.println("\n=== Listar Autorizações ===");
+        System.out.println("Filtrar por:");
+        System.out.println("1 - Paciente");
+        System.out.println("2 - Tipo de exame");
+        System.out.print("Opção: ");
+        int opcao = sc.nextInt();
+        sc.nextLine();
+
+        List<AutorizacaoExame> resultado = new ArrayList<>();
+
+        if (opcao == 1) {
+            List<Paciente> pacientes = new ArrayList<>();
+            for (Usuario u : usuarios)
+                if (u instanceof Paciente) {
+                    pacientes.add((Paciente) u);
+                    System.out.println((pacientes.size() - 1) + " - " + u.getNome());
+                }
+            System.out.print("Escolha o paciente: ");
+            int idx = sc.nextInt(); sc.nextLine();
+            if (idx < 0 || idx >= pacientes.size()) { System.out.println("Inválido."); return; }
+            Paciente p = pacientes.get(idx);
+            for (AutorizacaoExame a : autorizacoes)
+                if (a.getPaciente().equals(p)) resultado.add(a);
+
+        } else if (opcao == 2) {
+            TipoExame[] exames = TipoExame.values();
+            for (int i = 0; i < exames.length; i++)
+                System.out.println(i + " - " + exames[i].getDescricao());
+            System.out.print("Escolha o exame: ");
+            int idx = sc.nextInt(); sc.nextLine();
+            if (idx < 0 || idx >= exames.length) { System.out.println("Inválido."); return; }
+            TipoExame tipo = exames[idx];
+            for (AutorizacaoExame a : autorizacoes)
+                if (a.getExame().equals(tipo)) resultado.add(a);
+
+        } else {
+            System.out.println("Opção inválida.");
+            return;
+        }
+
+        resultado.sort(Comparator.comparing(AutorizacaoExame::getDataCadastro));
+        if (resultado.isEmpty()) System.out.println("Nenhuma autorização encontrada.");
+        else resultado.forEach(System.out::println);
+        }
+
+    private void carregarDados() {
+        Administrador admin1 = new Administrador("Guilherme Admin", "GU");
+        Administrador admin2 = new Administrador("Fernando Admin", "FE");
+
+        Medico med1 = new Medico("Dr. Roberto Silva", "RS");
+        Medico med2 = new Medico("Dra. Ana Souza", "AS");
+        Medico med3 = new Medico("Dr Paulo Mendes", "PM");
+        Medico med4 = new Medico("Dra. Julia Lima", "JL");
+
+        Paciente pac1 = new Paciente("Joao Oliveira", "JO");
+        Paciente pac2 = new Paciente("Maria Santos", "MS");
+        Paciente pac3 = new Paciente("Lucas Ferreira", "LF");
+        Paciente pac4 = new Paciente("Beatriz Costa", "BC");
+        Paciente pac5 = new Paciente("Tiago Almeida", "TA");
+
+        usuarios.addAll(Arrays.asList(admin1, admin2, med1, med2, med3, med4, pac1, pac2, pac3, pac4, pac5));
+
+        AutorizacaoExame a1 = new AutorizacaoExame(med1, pac1, TipoExame.RAIO_X);
+        AutorizacaoExame a2 = new AutorizacaoExame(med1, pac2, TipoExame.HEMOGRAMA);
+        AutorizacaoExame a3 = new AutorizacaoExame(med2, pac1, TipoExame.TOMOGRAFIA);
+        AutorizacaoExame a4 = new AutorizacaoExame(med2, pac3, TipoExame.ULTRASSOM);
+        AutorizacaoExame a5 = new AutorizacaoExame(med3, pac4, TipoExame.ELETROCARDIOGRAMA);
+        AutorizacaoExame a6 = new AutorizacaoExame(med3, pac5, TipoExame.GLICEMIA);
+        AutorizacaoExame a7 = new AutorizacaoExame(med4, pac2, TipoExame.COLONOSCOPIA);
+        AutorizacaoExame a8 = new AutorizacaoExame(med4, pac3, TipoExame.ECOCARDIOGRAMA);
+        AutorizacaoExame a9 = new AutorizacaoExame(med1, pac4, TipoExame.RESSONANCIA_MAGNETICA);
+        AutorizacaoExame a10 = new AutorizacaoExame(med2, pac5, TipoExame.DENSITOMETRIA_OSSEA);
+
+        autorizacoes.addAll(Arrays.asList(a1, a2, a3, a4, a5, a6, a7, a8, a9, a10));
+
+        pac1.adicionarAutorizacao(a1);
+        pac1.adicionarAutorizacao(a3);
+        pac2.adicionarAutorizacao(a2);
+        pac2.adicionarAutorizacao(a7);
+        pac3.adicionarAutorizacao(a4);
+        pac3.adicionarAutorizacao(a8);
+        pac4.adicionarAutorizacao(a5);
+        pac4.adicionarAutorizacao(a9);
+        pac5.adicionarAutorizacao(a6);
+        pac5.adicionarAutorizacao(a10);
+
+        usuarioAtual = admin1;
+}
 }
