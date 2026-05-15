@@ -156,8 +156,6 @@ public class Sistema {
             return;
         }
 
-        sc.nextLine(); // limpa o ENTER que sobrou do nextInt()
-
         System.out.print("Digite parte do nome do médico/paciente: ");
         String trecho = sc.nextLine().trim().toLowerCase();
 
