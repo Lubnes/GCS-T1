@@ -151,7 +151,7 @@ public class Sistema {
     }
 
     private void buscarUsuario() {
-        if ((usuarioAtual instanceof Administrador)== false) {
+        if (!(usuarioAtual instanceof Administrador)) {
             System.out.println("Apenas administradores podem buscar usuários.");
             return;
         }
