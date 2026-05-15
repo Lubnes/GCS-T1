@@ -122,6 +122,7 @@ public class Sistema {
         AutorizacaoExame aut = new AutorizacaoExame( (Medico) usuarioAtual, paciente, tipoExame);
 
         autorizacoes.add(aut);
+        paciente.adicionarAutorizacao(aut);
 
         System.out.println("Autorização criada com sucesso!");
     }
