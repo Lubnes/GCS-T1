@@ -381,6 +381,7 @@ public class Sistema {
     private void carregarDados() {
         Administrador admin1 = new Administrador("Guilherme Admin", "GU");
         Administrador admin2 = new Administrador("Fernando Admin", "FE");
+        Administrador admin3 = new Administrador("Germán Admin", "GE");
 
         Medico med1 = new Medico("Dr. Roberto Silva", "RS");
         Medico med2 = new Medico("Dra. Ana Souza", "AS");
