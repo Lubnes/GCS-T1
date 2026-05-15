@@ -66,7 +66,7 @@ public class Sistema {
     }
 
     private void criarAutorizacao() {
-        if (( usuarioAtual instanceof Medico ) == false ) {
+        if (!(usuarioAtual instanceof Medico)) {
             System.out.println( "Apenas médicos podem criar autorizações.");
             return;
         }
@@ -89,6 +89,11 @@ public class Sistema {
         }
 
         System.out.print("Escolha o paciente: ");
+        if (!sc.hasNextInt()) {
+            System.out.println("Entrada inválida. Digite um número.");
+            sc.nextLine(); // Limpa a entrada inválida
+            return;
+        }
         int indice = sc.nextInt();
         sc.nextLine(); 
 
@@ -117,6 +122,7 @@ public class Sistema {
         AutorizacaoExame aut = new AutorizacaoExame( (Medico) usuarioAtual, paciente, tipoExame);
 
         autorizacoes.add(aut);
+        paciente.adicionarAutorizacao(aut);
 
         System.out.println("Autorização criada com sucesso!");
     }
@@ -151,12 +157,10 @@ public class Sistema {
     }
 
     private void buscarUsuario() {
-        if ((usuarioAtual instanceof Administrador)== false) {
+        if (!(usuarioAtual instanceof Administrador)) {
             System.out.println("Apenas administradores podem buscar usuários.");
             return;
         }
-
-        sc.nextLine(); // limpa o ENTER que sobrou do nextInt()
 
         System.out.print("Digite parte do nome do médico/paciente: ");
         String trecho = sc.nextLine().trim().toLowerCase();
@@ -241,7 +245,7 @@ public class Sistema {
     }
 
     private void estatisticas() {
-        if ((usuarioAtual instanceof Administrador ) == false ) {
+        if (!(usuarioAtual instanceof Administrador)) {
             System.out.println("Apenas administradores podem ver estatísticas.");
             return;
         }
